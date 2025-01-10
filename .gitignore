@@ -1,0 +1,5 @@
+node_modules
+redis-6.0.10
+dump.rdb
+redis-6.0.10.tar.gz
+package-lock.json
