@@ -1,3 +1,4 @@
+/* eslint-disable */
 import mongodb from 'mongodb';
 
 const { MongoClient } = mongodb;
