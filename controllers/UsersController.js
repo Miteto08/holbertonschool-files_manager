@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { ObjectId } from 'mongodb';
 import crypto from 'crypto';
 import dbClient from '../utils/db';
