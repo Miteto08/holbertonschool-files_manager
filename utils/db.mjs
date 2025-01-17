@@ -8,23 +8,16 @@ const url = `mongodb://${DB_HOST}:${DB_PORT}`;
 
 class DBClient {
     constructor() {
-        // Initialisation des propriétés
-        this.db = null;
-        this.users = null;
-        this.files = null;
-        this.init(); // Lancement de la connexion
-    }
-
-    // Méthode d'initialisation asynchrone
-    async init() {
-        try {
-            const client = await MongoClient.connect(url, { useUnifiedTopology: true });
-            this.db = client.db(DB_DATABASE); // Connexion à la base de données
-            this.users = this.db.collection('users');
-            this.files = this.db.collection('files');
-        } catch (err) {
-            console.error('Erreur lors de la connexion à MongoDB :', err.message);
-        }
+        MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
+            if (!err) {
+                this.db = client.db(DB_DATABASE);
+                this.users = this.db.collection('users');
+                this.files = this.db.collection('files');
+            } else {
+                console.log(err.message);
+                this.db = false;
+            }
+        });
     }
 
     isAlive() {
