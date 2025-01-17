@@ -1,37 +1,48 @@
 /* eslint-disable */
-import mongodb from 'mongodb';
+import { MongoClient } from 'mongodb';
 
-const { MongoClient } = mongodb;
+const DB_HOST = process.env.DB_HOST || 'localhost';
+const DB_PORT = process.env.DB_PORT || 27017;
+const DB_DATABASE = process.env.DB_DATABASE || 'files_manager';
+const url = `mongodb://${DB_HOST}:${DB_PORT}`;
 
 class DBClient {
     constructor() {
-        const host = process.env.DB_HOST || 'localhost';
-        const port = process.env.DB_PORT || 27017;
-        const database = process.env.DB_DATABASE || 'files_manager';
-        const url = `mongodb://${host}:${port}`;
-        MongoClient.connect(url, { useUnifiedTopology: true }, (error, client) => {
-            this.db = client.db(database);
-        });
+        this.db = null;
+        this.users = null;
+        this.files = null;
+        this.init();
+    }
+
+    async init() {
+        try {
+            const client = await MongoClient.connect(url, { useUnifiedTopology: true });
+            this.db = client.db(DB_DATABASE);
+            this.users = this.db.collection('users');
+            this.files = this.db.collection('files');
+        } catch (err) {
+            console.error('Erreur lors de la connexion à MongoDB :', err.message);
+        }
     }
 
     isAlive() {
-        if (this.db) {
-            return true;
-        }
-        return false;
+        return !!this.db;
     }
 
     async nbUsers() {
-        const users = this.db.collection('users');
-        return users.countDocuments();
+        if (!this.users) {
+            throw new Error('La collection users n\'est pas encore initialisée.');
+        }
+        return this.users.countDocuments();
     }
 
     async nbFiles() {
-        const files = this.db.collection('files');
-        return files.countDocuments();
+        if (!this.files) {
+            throw new Error('La collection files n\'est pas encore initialisée.');
+        }
+        return this.files.countDocuments();
     }
 }
 
 const dbClient = new DBClient();
-
 export default dbClient;
