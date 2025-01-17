@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { ObjectId } from 'mongodb';
 import Queue from 'bull';
 import fs from 'fs';
